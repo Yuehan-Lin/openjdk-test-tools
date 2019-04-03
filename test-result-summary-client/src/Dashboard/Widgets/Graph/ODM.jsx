@@ -16,17 +16,18 @@ const map = {
     "Daily-ODM-zOS": "Daily-ODM-pmz64 | 881-4way-Seg5FastpathRVEJB"
 };
 
+const displayMap = {
+    "Daily-ODM-all": ["Daily-ODM","Daily-ODM-Linux-PPCLE64","Daily-ODM-openJ9","Daily-ODM-zLinux", "Daily-ODM-zOS"]
+}
+
 let display = {
-    "Daily-ODM": true,
-    "Daily-ODM-Linux-PPCLE64": true,
-    "Daily-ODM-openJ9": true,
-    "Daily-ODM-zLinux": true,
-    "Daily-ODM-zOS": true
-};
+    "Daily-ODM-all": true
+}
 
 let baselineValue = 7000;
 
 export class ODMSetting extends Component {
+
     onChange = obj => {
         for (let i in display) {
             display[i] = false;
@@ -41,11 +42,11 @@ export class ODMSetting extends Component {
         const { buildSelected } = this.props;
 
         return <div style={{ maxWidth: 400 }}>
-            <Checkbox.Group onChange={this.onChange} values={map.keys} defaultValue={["Daily-ODM"]}>
-                {Object.keys( map ).map( key => {
-                    return <Checkbox key={key} value={key} checked={false}>{map[key]}</Checkbox>;
+            <Radio.Group onChange={this.onChange} values={displayMap.keys} defaultValue={"Daily-ODM-all"}>
+                {Object.keys( displayMap ).map( key => {
+                    return <Radio key={key} value={key} checked={false}>{key}</Radio>;
                 } )}
-            </Checkbox.Group>
+            </Radio.Group>
         </div>
     }
 }
@@ -75,11 +76,13 @@ export default class ODM extends Component {
     async updateData() {
         // when API ready => buildSelected will be list of builds
         let buildsName = '';
-        for(let i in display) {
+        for (let i in display) {
             if (display[i]) {
-                buildsName += "buildName=" + i;
-                if(i !== display.length - 1) {
-                    buildsName += "&";
+                for (let j in displayMap[i]) {
+                    buildsName += "buildName=" + displayMap[i][j];
+                    if (j !== displayMap.length - 1) {
+                        buildsName += "&";
+                    }
                 }
             }
         }
